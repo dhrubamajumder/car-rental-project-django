@@ -1,0 +1,50 @@
+{% extends 'dashboard/base_admin.html' %}
+{% block title %}Manage Cars{% endblock %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Car Management</h2>
+    <a href="{% url 'admin_add_car' %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Add New Car</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Car</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                    <th>Price/Day</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for car in cars %}
+                <tr>
+                    <td>
+                        {% with img=car.images.filter.is_primary.first %}
+                        {% if img %}
+                        <img src="{{ img.image.url }}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>{{ car.brand }}</td>
+                    <td>{{ car.model }}</td>
+                    <td>{{ car.year }}</td>
+                    <td>${{ car.rent_per_day }}</td>
+                    <td><span class="booking-status status-{{ car.status }}">{{ car.status }}</span></td>
+                    <td>
+                        <a href="{% url 'admin_edit_car' car.id %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'admin_delete_car' car.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this car?')"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted">No cars added yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

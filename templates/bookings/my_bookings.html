@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings - Car Rental{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">My Bookings</h2>
+
+    <ul class="nav nav-tabs mb-4" id="bookingTabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="#active" data-bs-toggle="tab">Active</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#past" data-bs-toggle="tab">Past</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="active">
+            {% for booking in active %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            <span class="booking-status status-{{ booking.status }}">{{ booking.status }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>{{ booking.car.brand }} {{ booking.car.model }}</h5>
+                            <p class="text-muted mb-0">{{ booking.start_date }} → {{ booking.end_date }}</p>
+                        </div>
+                        <div class="col-md-2">
+                            <strong>${{ booking.grand_total }}</strong>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge bg-info">{{ booking.payment_status|title }}</span>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No active bookings.</p>
+            {% endfor %}
+        </div>
+
+        <div class="tab-pane fade" id="past">
+            {% for booking in past %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            <span class="booking-status status-{{ booking.status }}">{{ booking.status }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>{{ booking.car.brand }} {{ booking.car.model }}</h5>
+                            <p class="text-muted mb-0">{{ booking.start_date }} → {{ booking.end_date }}</p>
+                        </div>
+                        <div class="col-md-2">
+                            <strong>${{ booking.grand_total }}</strong>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge bg-info">{{ booking.payment_status|title }}</span>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No past bookings.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

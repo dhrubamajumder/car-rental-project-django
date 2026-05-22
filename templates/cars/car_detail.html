@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}{{ car.brand }} {{ car.model }} - Car Rental{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'car_list' %}">Cars</a></li>
+            <li class="breadcrumb-item active">{{ car.brand }} {{ car.model }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div id="carGallery" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner rounded">
+                    {% for image in images %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ car }}" style="height: 400px; object-fit: cover;">
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 400px;">
+                            <i class="bi bi-car-front" style="font-size: 5rem;"></i>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if images|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carGallery" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carGallery" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+                {% endif %}
+            </div>
+            <div class="row mt-2 car-gallery">
+                {% for image in images %}
+                <div class="col-3">
+                    <img src="{{ image.image.url }}" class="img-fluid rounded" alt="" style="height: 80px; object-fit: cover; cursor: pointer;" onclick="document.querySelector('#carGallery .carousel-inner .carousel-item.active').classList.remove('active'); document.querySelectorAll('#carGallery .carousel-inner .carousel-item')[{{ forloop.counter0 }}].classList.add('active');">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3>{{ car.brand }} {{ car.model }} ({{ car.year }})</h3>
+                    {% if avg_rating %}
+                    <div class="star-rating mb-2">
+                        {% for i in "12345" %}
+                        <i class="bi {% if forloop.counter <= avg_rating %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                        {% endfor %}
+                        <span class="text-muted">({{ reviews|length }} reviews)</span>
+                    </div>
+                    {% endif %}
+                    <hr>
+                    <table class="table table-borderless">
+                        <tr><td><i class="bi bi-fuel-pump"></i> Fuel Type</td><td><strong>{{ car.fuel_type|title }}</strong></td></tr>
+                        <tr><td><i class="bi bi-gear"></i> Transmission</td><td><strong>{{ car.transmission|title }}</strong></td></tr>
+                        <tr><td><i class="bi bi-people"></i> Seats</td><td><strong>{{ car.seats }}</strong></td></tr>
+                        <tr><td><i class="bi bi-speedometer2"></i> Mileage</td><td><strong>{{ car.mileage|default:"N/A" }}</strong></td></tr>
+                        <tr><td><i class="bi bi-geo-alt"></i> Location</td><td><strong>{{ car.location|default:"N/A" }}</strong></td></tr>
+                    </table>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted">Rent per day</span>
+                            <h2 class="text-primary mb-0">${{ car.rent_per_day }}</h2>
+                        </div>
+                        {% if car.rent_per_hour %}
+                        <div class="text-end">
+                            <span class="text-muted">Rent per hour</span>
+                            <h5 class="mb-0">${{ car.rent_per_hour }}</h5>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <hr>
+                    {% if car.status == 'available' %}
+                    <a href="{% url 'create_booking' car.id %}" class="btn btn-primary btn-lg w-100">Book Now</a>
+                    {% else %}
+                    <button class="btn btn-secondary btn-lg w-100" disabled>Currently Unavailable</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if car.description %}
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h5>Description</h5>
+                    <p>{{ car.description }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4>Reviews & Ratings</h4>
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'add_review' car.id %}" class="mb-4">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-2">
+                                <select name="rating" class="form-select" required>
+                                    <option value="">Rating</option>
+                                    {% for i in "12345" %}
+                                    <option value="{{ forloop.counter }}">{{ forloop.counter }} Star</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <textarea name="comment" class="form-control" rows="2" placeholder="Write a review..." required></textarea>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                    {% for review in reviews %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ review.user.email }}</strong>
+                            <span>
+                                {% for i in "12345" %}
+                                <i class="bi {% if forloop.counter <= review.rating %}bi-star-fill text-warning{% else %}bi-star text-muted{% endif %}"></i>
+                                {% endfor %}
+                            </span>
+                        </div>
+                        <p class="mb-0 mt-1">{{ review.comment }}</p>
+                        <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No reviews yet. Be the first to review!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+}
+
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.card-img-top {
+    object-fit: cover;
+}
+
+.btn {
+    border-radius: 6px;
+}
+
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+footer {
+    margin-top: auto;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.badge {
+    font-size: 0.85rem;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.star-rating .bi-star-fill {
+    color: #ffc107;
+}
+
+.star-rating .bi-star {
+    color: #dee2e6;
+}
+
+.booking-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending { background-color: #fff3cd; color: #856404; }
+.status-approved { background-color: #d1e7dd; color: #0f5132; }
+.status-rejected { background-color: #f8d7da; color: #842029; }
+.status-completed { background-color: #cfe2ff; color: #084298; }
+.status-cancelled { background-color: #e2e3e5; color: #41464b; }
+
+.car-gallery img {
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.car-gallery img:hover {
+    opacity: 0.8;
+}
+
+.stat-card {
+    border-left: 4px solid #0d6efd;
+    border-radius: 8px;
+}
+
+.stat-card.revenue { border-left-color: #198754; }
+.stat-card.bookings { border-left-color: #0d6efd; }
+.stat-card.users { border-left-color: #6f42c1; }
+.stat-card.cars { border-left-color: #fd7e14; }
+
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+}

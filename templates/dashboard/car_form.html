@@ -1,0 +1,20 @@
+{% extends 'dashboard/base_admin.html' %}
+{% load crispy_forms_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block admin_content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h4>{{ title }}</h4>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="mb-3">
+                <label class="form-label">Additional Images</label>
+                <input type="file" name="images" class="form-control" multiple accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'admin_cars' %}" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Browse Cars - Car Rental{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Browse Cars</h2>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>Filters</h5>
+                    <form method="get">
+                        <div class="mb-3">
+                            <label class="form-label">Search</label>
+                            <input type="text" name="search" class="form-control" value="{{ form.search.value|default:'' }}" placeholder="Search cars...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Brand</label>
+                            <select name="brand" class="form-select">
+                                <option value="">All Brands</option>
+                                {% for b in brands %}
+                                <option value="{{ b }}" {% if form.brand.value == b %}selected{% endif %}>{{ b }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fuel Type</label>
+                            <select name="fuel_type" class="form-select">
+                                <option value="">All</option>
+                                <option value="petrol" {% if form.fuel_type.value == 'petrol' %}selected{% endif %}>Petrol</option>
+                                <option value="diesel" {% if form.fuel_type.value == 'diesel' %}selected{% endif %}>Diesel</option>
+                                <option value="ev" {% if form.fuel_type.value == 'ev' %}selected{% endif %}>Electric</option>
+                                <option value="hybrid" {% if form.fuel_type.value == 'hybrid' %}selected{% endif %}>Hybrid</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Transmission</label>
+                            <select name="transmission" class="form-select">
+                                <option value="">All</option>
+                                <option value="manual" {% if form.transmission.value == 'manual' %}selected{% endif %}>Manual</option>
+                                <option value="auto" {% if form.transmission.value == 'auto' %}selected{% endif %}>Automatic</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price Range</label>
+                            <div class="input-group">
+                                <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ form.min_price.value|default:'' }}">
+                                <span class="input-group-text">-</span>
+                                <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ form.max_price.value|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sort By</label>
+                            <select name="sort_by" class="form-select">
+                                <option value="">Default</option>
+                                <option value="price_asc" {% if form.sort_by.value == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_desc" {% if form.sort_by.value == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                                <option value="newest" {% if form.sort_by.value == 'newest' %}selected{% endif %}>Newest First</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        <a href="{% url 'car_list' %}" class="btn btn-outline-secondary w-100 mt-2">Reset</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                {% for car in cars %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if car.primary_image %}
+                        <img src="{{ car.primary_image.image.url }}" class="card-img-top" alt="{{ car }}" style="height: 180px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 180px;">
+                            <i class="bi bi-car-front" style="font-size: 3rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title">{{ car.brand }} {{ car.model }}</h5>
+                                {% if car.avg_rating %}
+                                <span class="badge bg-warning text-dark">{{ car.avg_rating }} <i class="bi bi-star-fill"></i></span>
+                                {% endif %}
+                            </div>
+                            <p class="card-text text-muted small">
+                                <i class="bi bi-calendar"></i> {{ car.year }} |
+                                <i class="bi bi-fuel-pump"></i> {{ car.fuel_type }} |
+                                <i class="bi bi-gear"></i> {{ car.transmission }} |
+                                <i class="bi bi-people"></i> {{ car.seats }} seats
+                            </p>
+                            <p class="text-muted small"><i class="bi bi-geo-alt"></i> {{ car.location|default:"N/A" }}</p>
+                            <h6 class="text-primary">${{ car.rent_per_day }}/day</h6>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-car-front text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">No cars found</h4>
+                    <p class="text-muted">Try adjusting your filters.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

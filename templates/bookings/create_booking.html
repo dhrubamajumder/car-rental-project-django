@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Book {{ car.brand }} {{ car.model }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4>Book This Car</h4>
+                    <form method="post" id="bookingForm">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="alert alert-info">
+                            <h6>Price Breakdown</h6>
+                            <p id="priceCalc">Select dates to see pricing</p>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    {% with primary=car.images.filter.is_primary.first %}
+                    {% if primary %}
+                    <img src="{{ primary.image.url }}" class="img-fluid rounded mb-3" alt="{{ car }}">
+                    {% endif %}
+                    {% endwith %}
+                    <h5>{{ car.brand }} {{ car.model }}</h5>
+                    <p class="text-muted">{{ car.year }} | {{ car.fuel_type }} | {{ car.transmission }}</p>
+                    <h3 class="text-primary">${{ car.rent_per_day }}<small class="text-muted">/day</small></h3>
+                </div>
+            </div>
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h6>Optional Services</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-person"></i> Driver Service - <strong>$500/day</strong></li>
+                        <li><i class="bi bi-shield-check"></i> Insurance - <strong>$300/day</strong></li>
+                        <li><i class="bi bi-geo-alt"></i> GPS - <strong>$200/day</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startDate = document.querySelector('#id_start_date');
+    const endDate = document.querySelector('#id_end_date');
+    const driverService = document.querySelector('#id_driver_service');
+    const insurance = document.querySelector('#id_insurance');
+    const gps = document.querySelector('#id_gps');
+    const priceCalc = document.querySelector('#priceCalc');
+    const rentPerDay = {{ car.rent_per_day }};
+
+    function calculatePrice() {
+        if (startDate.value && endDate.value) {
+            const start = new Date(startDate.value);
+            const end = new Date(endDate.value);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+
+            const baseAmount = diffDays * rentPerDay;
+            let extras = 0;
+            if (driverService.checked) extras += diffDays * 500;
+            if (insurance.checked) extras += diffDays * 300;
+            if (gps.checked) extras += diffDays * 200;
+
+            priceCalc.innerHTML = `
+                Days: <strong>${diffDays}</strong><br>
+                Base: <strong>${diffDays} × $${rentPerDay} = $${baseAmount.toFixed(2)}</strong><br>
+                ${extras > 0 ? `Extras: <strong>$${extras.toFixed(2)}</strong><br>` : ''}
+                <hr>
+                Total: <strong class="text-primary">$${(baseAmount + extras).toFixed(2)}</strong>
+            `;
+        }
+    }
+
+    startDate.addEventListener('change', calculatePrice);
+    endDate.addEventListener('change', calculatePrice);
+    driverService.addEventListener('change', calculatePrice);
+    insurance.addEventListener('change', calculatePrice);
+    gps.addEventListener('change', calculatePrice);
+});
+</script>
+{% endblock %}

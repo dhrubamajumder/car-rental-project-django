@@ -1,0 +1,82 @@
+{% extends 'dashboard/base_admin.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Dashboard</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card cars shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Total Cars</h6>
+                <h2>{{ total_cars }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bookings shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Total Bookings</h6>
+                <h2>{{ total_bookings }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card users shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Total Users</h6>
+                <h2>{{ total_users }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card revenue shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Active Rentals</h6>
+                <h2>{{ active_rentals }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if pending_bookings > 0 %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> You have <strong>{{ pending_bookings }}</strong> pending bookings to review. <a href="{% url 'admin_bookings' %}?status=pending" class="alert-link">View them</a>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">Recent Bookings</h5>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Car</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in recent_bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.user.email }}</td>
+                    <td>{{ booking.car.brand }} {{ booking.car.model }}</td>
+                    <td>${{ booking.grand_total }}</td>
+                    <td><span class="booking-status status-{{ booking.status }}">{{ booking.status }}</span></td>
+                    <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted">No bookings yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

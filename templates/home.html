@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %}Home - Premium Car Rental{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<div class="hero-section position-relative text-white" style="min-height: 85vh; background: #0f172a;">
+    <div class="container py-5 d-flex align-items-center" style="min-height: 85vh;">
+
+        <div class="row align-items-center w-100">
+
+            <!-- LEFT CONTENT -->
+            <div class="col-lg-6">
+                <h1 class="display-3 fw-bold">
+                    Rent a <span class="text-danger">Premium</span> Car
+                </h1>
+
+                <p class="lead text-light mt-3">
+                    Luxury cars, affordable prices, instant booking & smooth experience.
+                </p>
+
+                <div class="mt-4 d-flex gap-3">
+                    <a href="{% url 'car_list' %}" class="btn btn-danger btn-lg px-4">
+                        Browse Cars
+                    </a>
+                    <a href="{% url 'car_list' %}" class="btn btn-outline-light btn-lg px-4">
+                        How it Works
+                    </a>
+                </div>
+
+                <!-- STATS -->
+                <div class="row mt-5 text-center">
+                    <div class="col">
+                        <h3 class="fw-bold text-danger">{{ total_cars }}</h3>
+                        <small>Cars</small>
+                    </div>
+                    <div class="col">
+                        <h3 class="fw-bold text-danger">{{ total_bookings }}</h3>
+                        <small>Bookings</small>
+                    </div>
+                    <div class="col">
+                        <h3 class="fw-bold text-danger">4.9★</h3>
+                        <small>Rating</small>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT IMAGE -->
+            <div class="col-lg-6 text-center">
+                <img src="/static/images/about.png"
+                     class="img-fluid"
+                     style="max-height: 420px; filter: drop-shadow(0px 20px 30px rgba(0,0,0,0.5));">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- BRAND SECTION -->
+<div class="container py-5">
+    <h2 class="fw-bold mb-4">Browse by Brand</h2>
+
+    <div class="d-flex flex-wrap gap-2">
+        {% for brand in brands %}
+        <a href="{% url 'car_list' %}?brand={{ brand }}"
+           class="btn btn-outline-dark rounded-pill px-4">
+            {{ brand }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- FEATURED CARS -->
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Featured Cars</h2>
+        <a href="{% url 'car_list' %}" class="btn btn-dark">View All</a>
+    </div>
+
+    <div class="row g-4">
+
+        {% for car in featured_cars %}
+        <div class="col-lg-4 col-md-6">
+
+            <div class="card border-0 shadow-lg h-100 rounded-4 overflow-hidden">
+
+                <!-- IMAGE -->
+                {% if car.primary_image %}
+                <img src="{{ car.primary_image.image.url }}"
+                     class="w-100"
+                     style="height: 220px; object-fit: cover;">
+                {% else %}
+                <div class="bg-dark text-white d-flex align-items-center justify-content-center"
+                     style="height: 220px;">
+                    <i class="bi bi-car-front" style="font-size: 3rem;"></i>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold">{{ car.brand }} {{ car.model }}</h5>
+
+                    <p class="text-muted mb-2">
+                        {{ car.year }} • {{ car.fuel_type }} • {{ car.transmission }}
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="text-danger fw-bold mb-0">
+                            ${{ car.rent_per_day }}/day
+                        </h5>
+
+                        {% if car.avg_rating %}
+                        <span class="badge bg-warning text-dark">
+                            {{ car.avg_rating }} ★
+                        </span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="card-footer bg-white border-0">
+                    <a href="{% url 'car_detail' car.id %}"
+                       class="btn btn-dark w-100 rounded-pill">
+                        View Details
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No featured cars available.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+
+<!-- WHY CHOOSE US -->
+<div class="container py-5">
+    <div class="row text-center g-4">
+
+        <div class="col-md-4">
+            <div class="p-4 shadow-sm rounded-4">
+                <i class="bi bi-shield-check text-danger fs-1"></i>
+                <h5 class="mt-3 fw-bold">Safe & Trusted</h5>
+                <p class="text-muted">Verified cars and secure booking system.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-4 shadow-sm rounded-4">
+                <i class="bi bi-cash-coin text-danger fs-1"></i>
+                <h5 class="mt-3 fw-bold">Best Price</h5>
+                <p class="text-muted">Affordable luxury cars for everyone.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-4 shadow-sm rounded-4">
+                <i class="bi bi-lightning-charge text-danger fs-1"></i>
+                <h5 class="mt-3 fw-bold">Fast Booking</h5>
+                <p class="text-muted">Instant booking & approval system.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
