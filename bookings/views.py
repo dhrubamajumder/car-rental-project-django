@@ -17,14 +17,12 @@ def create_booking(request, car_id):
             booking.user = request.user
             booking.car = car
             booking.save()
-
             Notification.objects.create(
                 user=request.user,
                 title='Booking Submitted',
                 message=f'Your booking for {car.brand} {car.model} has been submitted and is pending approval.',
                 notification_type='booking'
             )
-
             messages.success(request, 'Booking created successfully!')
             return redirect('booking_confirmation', booking_id=booking.id)
     else:

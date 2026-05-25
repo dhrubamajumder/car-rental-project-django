@@ -6,13 +6,22 @@ from .models import Notification
 
 @login_required
 def notification_list(request):
-    notifications = request.user.notifications.all()
+
+    notifications = request.user.notifications.all().order_by('-id')
     unread_count = notifications.filter(is_read=False).count()
+
+    # ================= TEMPLATE DECISION =================
+    if request.user.is_superuser:
+        parent_template = 'admin.html'
+    else:
+        parent_template = 'base.html'
+
+    # ================= RENDER =================
     return render(request, 'notifications/notification_list.html', {
         'notifications': notifications,
         'unread_count': unread_count,
+        'parent_template': parent_template,
     })
-
 
 @login_required
 def mark_read(request, notification_id):

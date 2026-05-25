@@ -21,6 +21,16 @@ def dashboard_home(request):
     pending_bookings = Booking.objects.filter(status='pending').count()
     recent_bookings = Booking.objects.select_related('user', 'car').order_by('-created_at')[:5]
 
+    total_car_views = 0
+    conversion_rate = 0
+
+    if total_car_views > 0:
+        conversion_rate = round((total_bookings / total_car_views) * 100, 2)
+
+    booking_status_counts = Booking.objects.values('status').annotate(count=Count('id'))
+
+    monthly_bookings = Booking.objects.annotate(month=TruncMonth('created_at')).values('month').annotate(count=Count('id')).order_by('month')
+
     return render(request, 'dashboard/home.html', {
         'total_cars': total_cars,
         'total_bookings': total_bookings,
@@ -28,13 +38,17 @@ def dashboard_home(request):
         'active_rentals': active_rentals,
         'pending_bookings': pending_bookings,
         'recent_bookings': recent_bookings,
+        'conversion_rate': conversion_rate,
+        'booking_status_counts': booking_status_counts,
+        'monthly_bookings': monthly_bookings,
     })
 
 
 @staff_member_required
 def admin_cars(request):
-    cars = Car.objects.all().order_by('-created_at')
+    cars = Car.objects.prefetch_related('images').order_by('-created_at')
     return render(request, 'dashboard/car_list.html', {'cars': cars})
+
 
 
 @staff_member_required

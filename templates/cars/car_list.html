@@ -67,12 +67,16 @@
             <div class="row">
                 {% for car in cars %}
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 w-100 shadow-sm">
+
+{% comment %} ----------------------------------------------  Images  ------------------------------------------ {% endcomment %}
                         {% if car.primary_image %}
-                        <img src="{{ car.primary_image.image.url }}" class="card-img-top" alt="{{ car }}" style="height: 180px; object-fit: cover;">
+                        <div class="ratio ratio-4x3">
+                            <img src="{{ car.primary_image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ car }}">
+                        </div>
                         {% else %}
-                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 180px;">
-                            <i class="bi bi-car-front" style="font-size: 3rem;"></i>
+                        <div class="ratio ratio-4x3 bg-secondary text-white d-flex align-items-center justify-content-center">
+                            <i class="bi bi-car-front fs-1"></i>
                         </div>
                         {% endif %}
                         <div class="card-body">

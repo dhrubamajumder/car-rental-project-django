@@ -23,12 +23,13 @@
             <tbody>
                 {% for car in cars %}
                 <tr>
-                    <td>
-                        {% with img=car.images.filter.is_primary.first %}
-                        {% if img %}
-                        <img src="{{ img.image.url }}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
-                        {% endif %}
-                        {% endwith %}
+                   <td>
+                        {% for img in car.images.all %}
+                            {% if img.is_primary %}
+                                <img src="{{ img.image.url }}"
+                                    style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            {% endif %}
+                        {% endfor %}
                     </td>
                     <td>{{ car.brand }}</td>
                     <td>{{ car.model }}</td>
