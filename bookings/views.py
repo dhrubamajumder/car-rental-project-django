@@ -5,6 +5,7 @@ from cars.models import Car
 from .models import Booking, Payment
 from .forms import BookingForm
 from notifications.models import Notification
+from datetime import date
 
 
 @login_required
@@ -38,6 +39,8 @@ def booking_confirmation(request, booking_id):
 
 @login_required
 def my_bookings(request):
+    # expired booking update
+    update_car_availability()
     bookings = Booking.objects.filter(user=request.user)
     active = bookings.exclude(status__in=['cancelled', 'completed'])
     past = bookings.filter(status__in=['cancelled', 'completed'])
@@ -71,3 +74,31 @@ def cancel_booking(request, booking_id):
     else:
         messages.error(request, 'Cannot cancel this booking.')
     return redirect('my_bookings')
+
+
+def update_car_availability():
+    expired_bookings = Booking.objects.filter(
+        end_date__lt=date.today(),
+        status='approved'
+    )
+    for booking in expired_bookings:
+        car = booking.car
+        car.status = 'available'
+        car.save()
+        booking.status = 'completed'
+        booking.save()
+        
+
+@login_required
+def approve_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    booking.status = 'approved'
+    booking.save()
+
+    # car unavailable
+    car = booking.car
+    car.status = 'unavailable'
+    car.save()
+
+    return redirect('admin_bookings')
